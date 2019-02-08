@@ -533,6 +533,11 @@ var akamaiPropertySchema = map[string]*schema.Schema{
 					Optional: true,
 					Default:  80,
 				},
+				"https_port": {
+					Type:     schema.TypeInt,
+					Optional: true,
+					Default:  443,
+				},
 				"forward_hostname": {
 					Type:     schema.TypeString,
 					Optional: true,
@@ -549,6 +554,16 @@ var akamaiPropertySchema = map[string]*schema.Schema{
 					Default:  false,
 				},
 				"enable_true_client_ip": {
+					Type:     schema.TypeBool,
+					Optional: true,
+					Default:  false,
+				},
+				"true_client_ip_header": {
+					Type:     schema.TypeString,
+					Optional: true,
+					Default:  "True-Client-IP",
+				},
+				"true_client_ip_client_setting": {
 					Type:     schema.TypeBool,
 					Optional: true,
 					Default:  false,
@@ -976,6 +991,10 @@ func createOrigin(d *schema.ResourceData) (*papi.OptionValue, error) {
 			originValues["httpPort"] = val.(int)
 		}
 
+		if val, ok := originConfig["https_port"]; ok {
+			originValues["httpsPort"] = val.(int)
+		}
+
 		if val, ok := originConfig["cache_key_hostname"]; ok {
 			originValues["cacheKeyHostname"] = val.(string)
 		}
@@ -986,6 +1005,14 @@ func createOrigin(d *schema.ResourceData) (*papi.OptionValue, error) {
 
 		if val, ok := originConfig["enable_true_client_ip"]; ok {
 			originValues["enableTrueClientIp"] = val.(bool)
+		}
+
+		if val, ok := originConfig["true_client_ip_header"]; ok {
+			originValues["trueClientIpHeader"] = val.(string)
+		}
+
+		if val, ok := originConfig["true_client_ip_client_setting"]; ok {
+			originValues["trueClientIpClientSetting"] = val.(bool)
 		}
 
 		if forwardHostnameOk && (forwardHostname == "ORIGIN_HOSTNAME" || forwardHostname == "REQUEST_HOST_HEADER") {
